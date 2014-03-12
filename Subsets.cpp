@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -79,15 +80,48 @@ public:
     }
 };
 
+// 递归 但是不用一次递归求C(n,0), C(n,1) ... C(n,n)
+// 而是针对每一个元素判断其是否要被插入到最后结果中
+class Solution2
+{
+private:
+    void subset(vector<vector<int> > &res, vector<int> &S, vector<int> &data, int depth)
+    {
+        if (depth >= S.size())
+        {
+            res.push_back(data);
+            return ;
+        }
+        data.push_back(S[depth]);
+        subset(res, S, data, depth + 1);
+        data.pop_back();
+        subset(res, S, data, depth + 1);
+    }
+
+public:
+    vector<vector<int> > subsets(vector<int> &S)
+    {
+        vector<vector<int> > res;
+        vector<int> data;
+
+        sort(S.begin(), S.end());
+        subset(res, S, data, 0);
+
+        return res;
+    }
+};
+
 int main()
 {
     // test example
     Solution1 s1;
+    Solution2 s2;
 
     vector<vector<int> > res;
     vector<int> S;
     S.push_back(4), S.push_back(1), S.push_back(0);
-    res = s1.subsets(S);
+   // res = s1.subsets(S);
+    res = s2.subsets(S);
 
     for (int i = 0; i < res.size(); i++)
     {
@@ -98,3 +132,4 @@ int main()
 
     return 0;
 }
+
