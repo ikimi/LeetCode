@@ -95,6 +95,7 @@ private:
                 if (depth >= length - 1)
                 {
                     generate(res, queens, length);
+                    queens[depth] = -1;
                     return ;
                 }
                 nQueens(res, queens, length, depth + 1);
