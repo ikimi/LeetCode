@@ -12,6 +12,7 @@ struct TreeNode
 };
 
 // 递归
+// 8ms
 class Solution1
 {
     private:
@@ -38,6 +39,8 @@ class Solution1
 };
 
 // 非递归
+// 利用栈实现 时间复杂度为O(n) 平均空间复杂度为O(log(n)) 最坏情况下为O(n)
+// 8ms
 class Solution2
 {
     public:
@@ -67,11 +70,54 @@ class Solution2
         }
 };
 
+// 使用 Morris 中序遍历
+// 时间复杂度为O(n)(系数可能比上面使用栈的系数高) 空间复杂度为O(1)
+// 8ms
+class Solution3
+{
+public:
+    vector<int> inorderTraversal(TreeNode *root)
+    {
+        TreeNode *pre, *cur;
+        vector<int> array;
+
+        cur = root, pre = NULL;
+        while (cur)
+        {
+            if (!cur->left)
+            {
+                array.push_back(cur->val);
+                cur = cur->right;
+            }
+            else
+            {
+                pre = cur->left;
+                while (pre->right && (pre->right != cur))
+                    pre = pre->right;
+                if (!pre->right)
+                {
+                    pre->right = cur;
+                    cur = cur->left;
+                }
+                else
+                {
+                    array.push_back(cur->val);
+                    pre->right = NULL;
+                    cur = cur->right;
+                }
+            }
+        }
+
+        return array;
+    }
+};
+
 int main()
 {
     // test example
     Solution1 s1;
     Solution2 s2;
+    Solution3 s3;
 
     TreeNode *root = new TreeNode(1);
     root->left = new TreeNode(2);
@@ -80,9 +126,12 @@ int main()
     root->right->left->right = new TreeNode(5);
 
    // vector<int> arr = s1.inorderTraversal(root);
-    vector<int> arr = s2.inorderTraversal(root);
+   // vector<int> arr = s2.inorderTraversal(root);
+    vector<int> arr = s3.inorderTraversal(root);
+
     for(int i = 0; i < arr.size(); i++)
         cout << arr[i] << endl;
 
     return 0;
 }
+
