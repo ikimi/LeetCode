@@ -12,6 +12,7 @@ struct TreeNode
 };
 
 // 递归解法
+// 28ms
 class Solution1
 {
     private:
@@ -35,6 +36,8 @@ class Solution1
 };
 
 // 非递归实现
+// 时间复杂度O(n) 平均空间复杂度O(logn) 最坏时间复杂度O(n)
+// 8ms
 class Solution2
 {
     public:
@@ -64,6 +67,48 @@ class Solution2
         }
 };
 
+// Morris Traversal 前序遍历
+// 时间复杂度为O(n) 空间复杂度为O(1)
+// 32ms
+class Solution3
+{
+public:
+    vector<int> preorderTraversal(TreeNode *root)
+    {
+        vector<int> array;
+
+        TreeNode *cur, *pre;
+        cur = root, pre = NULL;
+        while (cur)
+        {
+            if (!cur->left)
+            {
+                array.push_back(cur->val);
+                cur = cur->right;
+            }
+            else
+            {
+                pre = cur->left;
+                while (pre->right && (pre->right != cur))
+                    pre = pre->right;
+                if (!pre->right)
+                {
+                    array.push_back(cur->val);
+                    pre->right = cur;
+                    cur = cur->left;
+                }
+                else
+                {
+                    pre->right = NULL;
+                    cur = cur->right;
+                }
+            }
+        }
+
+        return array;
+    }
+};
+
 int main()
 {
     // test example
@@ -75,10 +120,12 @@ int main()
 
     Solution1 s1;
     Solution2 s2;
+    Solution3 s3;
     vector <int> array;
 
     //array = s1.preorderTraversal(root);
-    array = s2.preorderTravelsal(root);
+   // array = s2.preorderTravelsal(root);
+    array = s3.preorderTraversal(root);
 
     for (int i = 0; i < array.size(); i++)
         cout << array[i] << endl;
