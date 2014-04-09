@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 using namespace std;
 
@@ -188,12 +189,81 @@ public:
     }
 };
 
+// 时间复杂度为O(n^2)的算法
+// 780ms
+class Solution4
+{
+public:
+    vector<vector<int> > fourSum(vector<int> &num, int target)
+    {
+        vector<vector<int> > res;
+        vector<int> tmp;
+        map<int, vector<pair <int, int> > > table;
+
+        int i, j, n, temp;
+
+        n = num.size();
+        sort(num.begin(), num.end());
+
+        for (i = 0; i < n; i++)
+            for (j = i + 1; j < n; j++)
+                table[num[i] + num[j]].push_back(make_pair(i, j));
+
+        for (i = 0; i < n;)
+        {
+            for (j = i + 1; j < n;)
+            {
+                map<int, vector<pair<int, int> > > :: iterator it = table.find(target - num[i] - num[j]);
+                if (it != table.end())
+                {
+                    for (int k = 0; k < it->second.size(); k++)
+                    {
+                        if (it->second[k].first > j)
+                        {
+                            if (res.size())
+                            {
+                                if (res[res.size() - 1][0] != num[i] || res[res.size() - 1][1]  != num[j] || res[res.size() - 1][2] != num[it->second[k].first] || res[res.size() -1][3] != num[it->second[k].second])
+                                {
+                                    tmp.clear();
+                                    tmp.push_back(num[i]);
+                                    tmp.push_back(num[j]);
+                                    tmp.push_back(num[it->second[k].first]);
+                                    tmp.push_back(num[it->second[k].second]);
+                                    res.push_back(tmp);
+                                }
+                            }
+                            else
+                            {
+                                tmp.clear();
+                                tmp.push_back(num[i]);
+                                tmp.push_back(num[j]);
+                                tmp.push_back(num[it->second[k].first]);
+                                tmp.push_back(num[it->second[k].second]);
+                                res.push_back(tmp);
+                            }
+                        }
+                    }
+                }
+                temp = num[j];
+                while (j < n && temp == num[j])
+                    j++;
+            }
+            temp = num[i];
+            while (i < n && temp == num[i])
+                i++;
+        }
+
+        return res;
+    }
+};
+
 int main()
 {
     // test example
     Solution1 s1;
     Solution2 s2;
     Solution3 s3;
+    Solution4 s4;
 
     vector<int> num;
     vector<vector<int> > res;
@@ -209,14 +279,15 @@ int main()
     //res = s2.fourSum(num, 6);
     //res = s3.fourSum(num, 6);
 
-    num.push_back(1);num.push_back(0);
-    num.push_back(-1);num.push_back(0);
-    num.push_back(-2);num.push_back(2);
-
+    num.push_back(-5);num.push_back(5);
+    num.push_back(4);num.push_back(-3);
+    num.push_back(0);num.push_back(0);
+    num.push_back(4);num.push_back(-2);
 
    // res = s1.fourSum(num, 0);
   //  res = s2.fourSum(num, 0);
-    res = s3.fourSum(num, 0);
+   // res = s3.fourSum(num, 0);
+   res = s4.fourSum(num, 4);
 
     for (int i = 0; i < res.size(); i++)
     {
@@ -227,3 +298,4 @@ int main()
 
     return 0;
 }
+
