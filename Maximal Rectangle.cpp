@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <stack>
 
 using namespace std;
 
@@ -101,11 +102,72 @@ public:
     }
 };
 
+// 采用Largest Rectangle in Histogram的方法
+// 首先计算第一行的最大值，然后计算1～2行的，然后计算1~3行的...
+// 一次类推直到所有的行都被包括进来
+// 时间复杂度O(n^2)
+// 96ms (竟然比SO(n^3的方法慢...))
+class Solution3
+{
+private:
+    int LargestRectangleArea(vector<int> &height)
+    {
+        height.push_back(0);
+
+        int len = height.size();
+        stack<int> pos;
+
+        int maxArea = 0;
+        for (int i = 0; i < len;)
+        {
+            if (pos.empty() || height[pos.top()] <= height[i])
+                pos.push(i++);
+            else
+            {
+                int top = pos.top();
+                pos.pop();
+
+                int area = height[top] * (pos.empty() ? i : i - pos.top() - 1);
+                if (area > maxArea)
+                    maxArea = area;
+            }
+        }
+
+        return maxArea;
+    }
+
+public:
+    int maximalRectangle(vector<vector<char> > &matrix)
+    {
+        int m = matrix.size();
+        if (!m)
+            return 0;
+        int n = matrix[0].size();
+
+        vector<int> height(n, 0);
+        int maxArea = 0;
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+                if (matrix[i][j] == '1')
+                    height[j]++;
+                else
+                    height[j] = 0;
+            int area = LargestRectangleArea(height);
+            if (area > maxArea)
+                maxArea = area;
+        }
+
+        return maxArea;
+    }
+};
+
 int main()
 {
     // test example
     Solution1 s1;
     Solution2 s2;
+    Solution3 s3;
 
     vector<vector<char> > matrix;
     vector<char> tmp(4, '0');
@@ -125,6 +187,7 @@ int main()
 
     cout << s1.maximalRectangle(matrix) << endl;
     cout << s2.maximalRectangle(matrix) << endl;
+    cout << s3.maximalRectangle(matrix) << endl;
 
     return 0;
 }
